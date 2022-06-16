@@ -29,10 +29,17 @@ const update = (id,data) => {
  });
 };
 
+const patch = (id, data) => {
+  return   Product.findOneAndUpdate({_id:id}, data);
+
+
+};
+
 module.exports = {
     get,
     getById,
     create,
     remove,
-    update
+    update,
+    patch
 };

@@ -34,8 +34,13 @@ const post = async (req, res)=>{
          res.status(201);
          res.send();
     } catch (err){
-         res.status(500);
-         res.send('Internal Server Error');
+        if(err && err.message.indexOf('validation failed')>-1){
+         res.status(400);
+         res.send('Bad request');
+        } else{
+            res.status(500);
+            res.send(err);
+        }
     }
 };
 
@@ -54,14 +59,29 @@ const update = async (req, res) =>{
     await ProductRepository.update(id,body);
     res.status(204);
     res.status();
-
 };
+
+    //PATCH http://localhost:3000/api/products/:id  {body}
+    const patch = async (req,res) =>{
+    const {id} = req.params;
+    const {body} = req;
+    try{
+          await ProductRepository.patch(id, body);
+          res.status(204);
+          res.send();
+        } catch (err){
+            res.status(500);
+            res.status('Internal server error');        }   
+
+    };
+
 module.exports = {
     get,
     post,
     getById,
     remove,
-    update
+    update,
+    patch
     
     
 };

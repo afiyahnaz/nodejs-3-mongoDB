@@ -12,6 +12,7 @@ router.get('/:id',productsCtrl.getById);
 router.post('/',productsCtrl.post);
 router.delete('/:id',productsCtrl.remove);
 router.put('/:id',productsCtrl.update);
+router.patch('/:id',productsCtrl.patch);
 
 
 
