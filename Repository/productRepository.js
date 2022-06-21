@@ -1,8 +1,33 @@
 const Product = require('../models/productModel');
 
 
-const get = () =>{
-    return Product.find({},{_v : 0});
+const get = (options) =>{
+
+    const   { page, pageSize, sort, dir} = options;
+
+    let direction;
+
+    switch(dir.toLowerCase()) {
+      case 'asc' :
+            direction =1;
+            break;
+       case 'desc' :  
+           direction = -1;
+           break ;
+       default:
+            direction = 1;
+            break;
+
+    };
+    return Product
+    .find({},{_v : 0})
+    .sort({ [sort]: direction})
+    .skip((page - 1)* pageSize)
+    .limit(pageSize);
+};
+
+const  getCount = () =>{
+    return Product.count();
 };
 
 const getById = (id) =>  {
@@ -41,5 +66,6 @@ module.exports = {
     create,
     remove,
     update,
-    patch
+    patch,
+    getCount
 };

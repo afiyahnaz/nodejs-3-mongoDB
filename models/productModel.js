@@ -11,6 +11,7 @@ price : { type :Number, required: [true, 'Price is mandatory']},
 instock :{ type :Boolean, default:false},
 category : {type : String ,required: [true, 'category is mandatory']},
 discount :{type : Number, default:0},
+updatedAt:{type:Date, default:Date.now},
 });
 
 

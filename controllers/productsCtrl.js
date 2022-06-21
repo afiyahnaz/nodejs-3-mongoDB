@@ -1,14 +1,48 @@
 
 const ProductRepository = require('../Repository/productRepository');
 
+//http://locoalhost:3000/api/products/page/1/size/20?sort=brand&dir=desc
+//if user passes sort=brand&dir=desc then we should do changes
+const getOptions = (req) =>{
 
-const get = async (req,res) => {
-    try{
-          const products = await  ProductRepository.get();
+        const pageSize = +req.params.size    || 10;  
+        const page     = +req.params.page  || 1;
+
+        let sort = req.query.sort;
+        const dir = req.query.dir  || '';
+
+        if(!sort){
+            sort = 'updatedAt';
+            if(!dir){
+                dir = 'DESC'
+            }
+        }
+        return  {
+            page,
+            pageSize,
+            sort,
+            dir
+        };
+    };
+
+//http://localhost:3000/api/products/page/1/size/20?sort=brand&dir=DESC
+        // console.log(sort,dir,'query params');
+        const get = async (req,res) => {
+            try{
+        const options = getOptions(req);
+        const products = await  ProductRepository.get(options);
+        const totalRecords = await ProductRepository.getCount();
+        const totalPages = Math.ceil(totalRecords/options.pageSize);
+        const response ={
+            metadata:   {
+            totalRecords:totalRecords,
+            totalPages: totalPages,  
+        },
+            data: products,
+         };
           res.status(200);
-          res.json(products);
-    }
-    catch(err) {
+          res.json(response);
+    }catch(err) {
         res.status(500);
         res.send('internal Server Error');
     }
@@ -30,6 +64,7 @@ const getById = async(req, res) =>{
 
 const post = async (req, res)=>{
     try{
+        req.body.createdAt = new Date();
        await ProductRepository.create(req.body);
          res.status(201);
          res.send();
@@ -58,7 +93,7 @@ const update = async (req, res) =>{
     const {body} = req;
     await ProductRepository.update(id,body);
     res.status(204);
-    res.status();
+    res.send();
 };
 
     //PATCH http://localhost:3000/api/products/:id  {body}
@@ -71,7 +106,8 @@ const update = async (req, res) =>{
           res.send();
         } catch (err){
             res.status(500);
-            res.status('Internal server error');        }   
+            res.send('Internal server error');       
+         }   
 
     };
 
